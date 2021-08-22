@@ -59,12 +59,22 @@ map2<-tm_shape(worldmap_covid_data_economic)+
       tm_polygons(col="mean_economic", n=5, style="cont", palette="BuGn", textNA="No Data")+
       tm_legend(position=c("left", "bottom"))
 
-## Deletes Antarctica
+
+## changes legend breaks and title
+
+map3<-tm_shape(worldmap_covid_data_economic)+
+               tm_polygons(col="mean_economic", n=5, style="cont", palette="BuGn", textNA="No Data", 
+               title="Economic\nIntervention\nIndex", breaks=c(0,0.25,0.5, 0.75))+
+  tm_legend(position=c("left", "bottom"))+
+  tm_layout(legend.title.size=1, legend.outside=TRUE)
 
 
 
-
-
+map4<-tm_shape(worldmap_covid_data_economic)+
+  tm_polygons(col="mean_economic", n=5, style="cont", palette="BuGn", textNA="No Data", 
+              title="Covid Economic\nIntervention Index", breaks=c(0,0.25,0.5, 0.75))+
+  tm_legend(position=c("left", "bottom"))+
+  tm_layout(legend.title.size=1.2, legend.outside=TRUE, legend.outside.position = c("bottom"))
 
 
 
