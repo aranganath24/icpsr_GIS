@@ -19,6 +19,13 @@ world<-ne_countries(scale="medium", returnclass="sf")
 worldmap<-tm_shape(world)+
            tm_polygons()
 
+## Remove Antarctica
+
+world<-world %>% filter(iso_a3 !="ATA")
+
+worldmap<-tm_shape(world)+
+  tm_polygons()
+
 
 ## Prepare covid economic data for mapping
 
@@ -29,6 +36,8 @@ class(covid_data_economic$Economic_Measures)
 covid_data_economic<-covid_data_economic %>% group_by(iso) %>% 
                                              summarize(mean_economic=mean(Economic_Measures, na.rm=FALSE))
 
+summary(covid_data_economic$mean_economic)
+
 
 ## Join Covid data to world boundaries data
 
@@ -37,17 +46,23 @@ worldmap_covid_data_economic<-full_join(world, covid_data_economic, by=c("iso_a3
 
 View(worldmap_covid_data_economic)
 
-
-
 ## Make preliminary map of economic measures 
 
 
 map1<-tm_shape(worldmap_covid_data_economic)+
-      tm_polygons(col="mean_economic", n=6, style="jenks", palette="BuGn")
+      tm_polygons(col="mean_economic", n=8, style="jenks", palette="BuGn")
+
+
+## Makes continuous scale, changes no data label, shifts legend position
+
+map2<-tm_shape(worldmap_covid_data_economic)+
+      tm_polygons(col="mean_economic", n=5, style="cont", palette="BuGn", textNA="No Data")+
+      tm_legend(position=c("left", "bottom"))
+
+## Deletes Antarctica
 
 
 
-## Prepare Covid Healthcare Data for Mapping
 
 
 
