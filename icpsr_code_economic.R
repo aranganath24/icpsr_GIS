@@ -80,7 +80,7 @@ map4<-map3+
 ## Add credits 
 
 map5<-map4+
-      tm_credits("Author: Aditya Ranganath\nCRS: WGS1984\nSource: ICPSR (https://doi.org/10.3886/E119061V6)", position=c("right","bottom"),
+      tm_credits("Author: Aditya Ranganath\nCRS: WGS1984\nSource: ICPSR (https://doi.org/10.3886/E119061V6)", position=c("RIGHT","BOTTOM"),
                  size=0.5)
 
 
