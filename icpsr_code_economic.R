@@ -70,15 +70,17 @@ map3<-tm_shape(worldmap_covid_data_economic)+
                 legend.outside.position = c("bottom"), frame=FALSE)
 
 
-## Add title and credits 
+## Add title
 
 map4<-map3+
       tm_layout(main.title="National Economic Support Measures\nin Response to Covid Pandemic",
-                main.title.position="center", legend.outside.size=0.2)
+                main.title.position="center", legend.outside.size=0.2, attr.outside=TRUE)
 
 
+## Add credits 
 
-
+map5<-map4+
+      tm_credits("Author: Aditya Ranganath\nCRS: WGS1984", position=c("right","bottom"))
 
 
 
