@@ -130,10 +130,17 @@ map3
 ```{r,warning=FALSE}
 map4<-map3+
         tm_layout(main.title="National Economic Support Measures\nin Response to the Covid-19 Pandemic", 
-                  main.title.position="center", legend.outside.size=0.2, attr.outside=TRUE, main.title.size=1)
+                  main.title.position="center", legend.outside.size=0.2, attr.outside=TRUE, main.title.size=1, inner.margins=c(0.06,0.10,0.10,0.08))
 
 map4
 
+```
+
+```{r, warning=FALSE}
+map5<-map4+
+      tm_credits("Author: Aditya Ranganath\nCRS: WGS1984\nSource: ICPSR (https://doi.org/10.3886/E119061V6)", position=c(0.78,0.01), size=0.5)
+
+map5
 ```
 
 
