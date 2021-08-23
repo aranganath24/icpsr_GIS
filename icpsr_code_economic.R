@@ -60,22 +60,34 @@ map2<-tm_shape(worldmap_covid_data_economic)+
       tm_legend(position=c("left", "bottom"))
 
 
-## changes legend breaks, orientation, and title; changes legend position; removes frame
+## changes legend breaks, orientation, and title; changes legend position; removes frame; legend inside
 
 map3<-tm_shape(worldmap_covid_data_economic)+
       tm_polygons(col="mean_economic", n=5, style="cont", palette="BuGn", textNA="No Data", 
                   title="Mean of Covid Economic\nIntervention Index\n(1/1/2020 to 10/1/2020)", 
                   legend.is.portrait=FALSE,breaks=c(0,0.25,0.5, 0.75))+
-      tm_layout(legend.title.size=1.2, legend.outside=TRUE, 
-                legend.outside.position = c("bottom"), frame=FALSE)
+      tm_layout(legend.title.size=0.8, legend.title.fontface=2,legend.outside=FALSE, 
+                legend.position = c("left", "bottom"), frame=FALSE, legend.text.size = 0.5,
+                legend.hist.size = 0.5)
 
+## changes legend breaks, orientation, and title; changes legend position; removes frame; legend outside
+map3a<-tm_shape(worldmap_covid_data_economic)+
+       tm_polygons(col="mean_economic", n=5, style="cont", palette="BuGn", textNA="No Data", 
+              title="Mean of Covid Economic\nIntervention Index\n(1/1/2020 to 10/1/2020)", 
+              legend.is.portrait=FALSE,breaks=c(0,0.25,0.5, 0.75))+
+        tm_layout(legend.title.size=0.8, legend.title.fontface=2,legend.outside=TRUE, 
+            legend.outside.position = c("bottom"), frame=FALSE, legend.text.size = 0.5,
+            legend.hist.size = 0.5)
 
 ## Add title
 
 map4<-map3+
-      tm_layout(main.title="National Economic Support Measures\nin Response to Covid Pandemic",
+      tm_layout(main.title="National Economic Support Measures\nin Response to the Covid-19 Pandemic",
                 main.title.position="center", legend.outside.size=0.2, attr.outside=TRUE)
 
+map4a<-map3a+
+        tm_layout(main.title="National Economic Support Measures\nin Response to the Covid-19 Pandemic",
+            main.title.position="center", legend.outside.size=0.2, attr.outside=TRUE)
 
 ## Add credits 
 
@@ -83,7 +95,9 @@ map5<-map4+
       tm_credits("Author: Aditya Ranganath\nCRS: WGS1984\nSource: ICPSR (https://doi.org/10.3886/E119061V6)", position=c("RIGHT","BOTTOM"),
                  size=0.5)
 
-
+map5a<-map4a+
+       tm_credits("Author: Aditya Ranganath\nCRS: WGS1984\nSource: ICPSR (https://doi.org/10.3886/E119061V6)", position=c("RIGHT","BOTTOM"),
+             size=0.5)
 
 ##Introduction (ICPSR, motivation)
 ##Download data from ICPSR
