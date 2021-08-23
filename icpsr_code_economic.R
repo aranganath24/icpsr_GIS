@@ -60,11 +60,12 @@ map2<-tm_shape(worldmap_covid_data_economic)+
       tm_legend(position=c("left", "bottom"))
 
 
-## changes legend breaks and title; changes legend position; removes frame
+## changes legend breaks, orientation, and title; changes legend position; removes frame
 
 map3<-tm_shape(worldmap_covid_data_economic)+
       tm_polygons(col="mean_economic", n=5, style="cont", palette="BuGn", textNA="No Data", 
-                  title="Covid Economic\nIntervention Index", breaks=c(0,0.25,0.5, 0.75))+
+                  title="Mean of Covid Economic\nIntervention Index\n(1/1/2020 to 10/1/2020)", 
+                  legend.is.portrait=FALSE,breaks=c(0,0.25,0.5, 0.75))+
       tm_layout(legend.title.size=1.2, legend.outside=TRUE, 
                 legend.outside.position = c("bottom"), frame=FALSE)
 
@@ -73,7 +74,7 @@ map3<-tm_shape(worldmap_covid_data_economic)+
 
 map4<-map3+
       tm_layout(main.title="National Economic Support Measures\nin Response to Covid Pandemic",
-                main.title.position="center")
+                main.title.position="center", legend.outside.size=0.2)
 
 
 
