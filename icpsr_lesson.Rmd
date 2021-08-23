@@ -1,5 +1,5 @@
 ---
-title: "ICPSR Lesson"
+title: "ICPSR Lesson (Draft)"
 output: html_document
 ---
 
@@ -98,7 +98,7 @@ worldmap_covid_data_economic<-full_join(world, covid_data_economic, by=c("iso_a3
 ## Make Maps
 
 
-```{r}
+```{r, warning=FALSE, fig.asp=0.5}
 map1<-tm_shape(worldmap_covid_data_economic)+
       tm_polygons(col="mean_economic", n=8, style="jenks", palette="BuGn")
 
@@ -106,7 +106,7 @@ map1
 ```
 
 
-```{r}
+```{r, warning=FALSE, fig.asp=0.5}
 map2<-tm_shape(worldmap_covid_data_economic)+
       tm_polygons(col="mean_economic", n=5, style="cont", palette="BuGn", textNA="No Data")+
       tm_legend(position=c("left", "bottom"))
@@ -115,7 +115,7 @@ map2
 ```
 
 
-```{r}
+```{r, warning=FALSE, fig.asp=0.5}
 map3<-tm_shape(worldmap_covid_data_economic)+
        tm_polygons(col="mean_economic", n=5, style="cont", palette="BuGn", textNA="No Data", 
               title="Mean of Covid Economic\nIntervention Index\n(1/1/2020 to 10/1/2020)", 
@@ -127,10 +127,10 @@ map3
 ```
 
 
-```{r}
+```{r,warning=FALSE}
 map4<-map3+
         tm_layout(main.title="National Economic Support Measures\nin Response to the Covid-19 Pandemic", 
-                  main.title.position="center", legend.outside.size=0.2, attr.outside=TRUE)
+                  main.title.position="center", legend.outside.size=0.2, attr.outside=TRUE, main.title.size=1)
 
 map4
 
