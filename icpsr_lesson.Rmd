@@ -1,0 +1,158 @@
+---
+title: "ICPSR Lesson"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+## Preliminaries 
+
+Install Packages 
+```{r, eval=FALSE }
+install.packages(c("readxl", "tidyverse", "tmap", "sf", "rnaturalearth", "rnaturalearthdata"))
+```
+
+Load Libraries 
+```{r}
+library(readxl)
+library(tidyverse)
+library(tmap)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
+```
+
+## Read in and View Data
+
+### Read in and View ICPSR Covid-19 Data
+
+```{r}
+covid_data<-read_excel("Gov_Responses2Covid19_last.xlsx", sheet="Dataset")
+```
+
+### Read in View World Map Data
+
+```{r}
+world<-ne_countries(scale="medium", returnclass="sf")
+```
+
+### Visualize World Map Data
+
+```{r}
+worldmap<-tm_shape(world)+
+          tm_polygons()
+
+worldmap
+```
+
+## Edit World Map Data
+
+```{r, fig.asp=0.5}
+world<-world %>% filter(iso_a3 !="ATA")
+
+worldmap<-tm_shape(world)+
+  tm_polygons()
+
+worldmap
+```
+
+## Prepare ICPSR Data for Mapping
+
+```{r}
+covid_data_economic<-covid_data %>% select(iso, Economic_Measures) 
+```
+
+
+```{r}
+covid_data_economic$Economic_Measures<-as.numeric(covid_data_economic$Economic_Measures)
+class(covid_data_economic$Economic_Measures)
+```
+
+
+```{r}
+covid_data_economic<-covid_data_economic %>% group_by(iso) %>% 
+                      summarize(mean_economic=mean(Economic_Measures, na.rm=FALSE))
+```
+
+
+```{r}
+summary(covid_data_economic$mean_economic)
+```
+
+## Join Covid data to world boundaries data
+
+```{r}
+worldmap_covid_data_economic<-full_join(world, covid_data_economic, by=c("iso_a3"="iso")) %>% 
+                              relocate(name, mean_economic)
+```
+
+
+## Make Maps
+
+
+```{r}
+map1<-tm_shape(worldmap_covid_data_economic)+
+      tm_polygons(col="mean_economic", n=8, style="jenks", palette="BuGn")
+
+map1
+```
+
+
+```{r}
+map2<-tm_shape(worldmap_covid_data_economic)+
+      tm_polygons(col="mean_economic", n=5, style="cont", palette="BuGn", textNA="No Data")+
+      tm_legend(position=c("left", "bottom"))
+
+map2
+```
+
+
+```{r}
+map3<-tm_shape(worldmap_covid_data_economic)+
+       tm_polygons(col="mean_economic", n=5, style="cont", palette="BuGn", textNA="No Data", 
+              title="Mean of Covid Economic\nIntervention Index\n(1/1/2020 to 10/1/2020)", 
+              legend.is.portrait=FALSE,breaks=c(0,0.25,0.5, 0.75))+
+        tm_layout(legend.title.size=0.8, legend.title.fontface=2,legend.outside=TRUE, 
+            legend.outside.position = c("bottom"), frame=FALSE, legend.text.size = 0.5,
+            legend.hist.size = 0.5)
+map3
+```
+
+
+```{r}
+map4<-map3+
+        tm_layout(main.title="National Economic Support Measures\nin Response to the Covid-19 Pandemic", 
+                  main.title.position="center", legend.outside.size=0.2, attr.outside=TRUE)
+
+map4
+
+```
+
+
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+
+
+
+
+
+
