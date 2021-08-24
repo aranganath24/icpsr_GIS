@@ -7,13 +7,21 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Introduction
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Many of ICSPR's datasets are available in tabular formats that are ready to be imported into standard statistical software packages for analysis. In many cases, it is possible to visualize the data in these tabular datasets on a map (even if such visualizations are not explicitly a part of the original analysis or the replication materials provided by ICPSR). In this tutorial, we will provide a brief example-driven overview of how you can transform tabular information from an ICSPR dataset into a map, using packages written for the R programming language. The tutorial does not presuppose any previous experience with statistical analysis or programming. 
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Why map ICPSR data to begin with? Students and researchers often use data archived at ICPSR as a resource for exploration and discovery. Indeed, the data that others have collected can often inspire novel questions and hypotheses. It is also the case that the social and political processes studied by the researchers who archive their data with ICPSR are intrinsically spatial; after all, these processes necessarily occur somewhere on the surface of the earth! Placing these social and political processes in their spatial context can therefore bring the data encoded in tabular datasets to life in dramatic ways, helping us to quickly notice patterns, identify puzzles, and generate hypotheses that would have otherwise remained obscure. In addition to using ICPSR data to generate ideas and explore patterns in existing data, students and researchers may want to reuse ICPSR data and incorporate them into their own ongoing research projects; in reusing this data, they may find it helpful to make publishable maps that they can use in their own papers and projects. 
 
-## Preliminaries 
+By working through the following code, students and researchers will learn how to spatially visualize existing ICPSR data to aid their exploration of datasets of interest, as well as create publishable maps that can be used in their papers and projects. The  tutorial can be used as a self-study resource, as well as the basis for a classroom demonstration or activity. It is important to emphasize that this is not a tutorial on Geographic Information Systems (GIS), and we do not cover important GIS concepts such as map projections and coordinate reference systems. If you use advanced mapping and spatial analysis in your work, you should learn these technical foundations (which are beyond the scope of our lesson here). 
+
+The data we will be mapping in this tutorial comes from a dataset archived on [OPENICPSR](https://www.openicpsr.org/openicpsr/). In particular, the dataset we will be using is entitled "Governments' Responses to COVID-19", which was collected by Simon Porcher, a researcher at the University of Paris. The dataset can be found [here](https://www.openicpsr.org/openicpsr/project/119061/version/V6/view), and the full citation information is below: 
+
+Porcher, Simon. Governments’ Responses to COVID-19 (Response2covid19). Ann Arbor, MI: Inter-university Consortium for Political and Social Research [distributor], 2020-11-08. [https://doi.org/10.3886/E119061V6](https://doi.org/10.3886/E119061V6). 
+
+This panel dataset provides information on public health and economic interventions initiated 
+
+## 1. Preliminaries 
 
 Install Packages 
 ```{r, eval=FALSE }
@@ -21,7 +29,7 @@ install.packages(c("readxl", "tidyverse", "tmap", "sf", "rnaturalearth", "rnatur
 ```
 
 Load Libraries 
-```{r}
+```{r, results=FALSE, message=FALSE}
 library(readxl)
 library(tidyverse)
 library(tmap)
@@ -38,7 +46,7 @@ library(rnaturalearthdata)
 covid_data<-read_excel("Gov_Responses2Covid19_last.xlsx", sheet="Dataset")
 ```
 
-### Read in View World Map Data
+### Read in and View World Map Data
 
 ```{r}
 world<-ne_countries(scale="medium", returnclass="sf")
@@ -142,24 +150,5 @@ map5<-map4+
 
 map5
 ```
-
-
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-
-
-
-
-
-
-
 
 
