@@ -19,16 +19,16 @@ The data we will be mapping in this tutorial comes from a dataset archived on [O
 
 Porcher, Simon. Governments’ Responses to COVID-19 (Response2covid19). Ann Arbor, MI: Inter-university Consortium for Political and Social Research [distributor], 2020-11-08. [https://doi.org/10.3886/E119061V6](https://doi.org/10.3886/E119061V6). 
 
-This panel dataset provides information on public health and economic interventions initiated 
+This panel dataset provides information on public health and economic interventions initiated by national governments in response to the Covid-19 Pandemic. It provides data in monthly increments from January 2020 to October 2020 for most of the world's sovereign countries. One of the variables in the dataset is an index (computed based on other variables in the dataset), that reflects the extent of government economic interventions to provide their populations with material support during the most acute phase of the Covid-19 Pandemic. Below, we will explore how to display this country-level data on economic responses to Covid-19 on a world map. 
 
 ## 1. Preliminaries 
 
-Install Packages 
+### 1b. Install Packages 
 ```{r, eval=FALSE }
 install.packages(c("readxl", "tidyverse", "tmap", "sf", "rnaturalearth", "rnaturalearthdata"))
 ```
 
-Load Libraries 
+### 1c. Load Libraries 
 ```{r, results=FALSE, message=FALSE}
 library(readxl)
 library(tidyverse)
@@ -38,21 +38,21 @@ library(rnaturalearth)
 library(rnaturalearthdata)
 ```
 
-## Read in and View Data
+## 2. Read in and View Data
 
-### Read in and View ICPSR Covid-19 Data
+### 2a. Read in and View ICPSR Covid-19 Data
 
 ```{r}
 covid_data<-read_excel("Gov_Responses2Covid19_last.xlsx", sheet="Dataset")
 ```
 
-### Read in and View World Map Data
+### 2b. Read in and View World Map Data
 
 ```{r}
 world<-ne_countries(scale="medium", returnclass="sf")
 ```
 
-### Visualize World Map Data
+### 2c. Visualize World Map Data
 
 ```{r}
 worldmap<-tm_shape(world)+
@@ -61,7 +61,7 @@ worldmap<-tm_shape(world)+
 worldmap
 ```
 
-## Edit World Map Data
+## 2d. Edit World Map Data
 
 ```{r, fig.asp=0.5}
 world<-world %>% filter(iso_a3 !="ATA")
@@ -72,30 +72,33 @@ worldmap<-tm_shape(world)+
 worldmap
 ```
 
-## Prepare ICPSR Data for Mapping
+## 3. Prepare ICPSR Data for Mapping
+
+### 3a. Select variables
 
 ```{r}
 covid_data_economic<-covid_data %>% select(iso, Economic_Measures) 
 ```
 
-
+### 3b. Change class of "Economic_Measures" index
 ```{r}
 covid_data_economic$Economic_Measures<-as.numeric(covid_data_economic$Economic_Measures)
 class(covid_data_economic$Economic_Measures)
 ```
 
-
+### 3c. Compute average of "Economic_Measures" index 
 ```{r}
 covid_data_economic<-covid_data_economic %>% group_by(iso) %>% 
                       summarize(mean_economic=mean(Economic_Measures, na.rm=FALSE))
 ```
 
+### 3d. Calculate summary statistics for newly created "mean_economic" variable
 
 ```{r}
 summary(covid_data_economic$mean_economic)
 ```
 
-## Join Covid data to world boundaries data
+## 4. Join "Covid data "mean_economic" (i.e. average of the "Economic_Measures" variable to the world boundaries data
 
 ```{r}
 worldmap_covid_data_economic<-full_join(world, covid_data_economic, by=c("iso_a3"="iso")) %>% 
@@ -103,9 +106,9 @@ worldmap_covid_data_economic<-full_join(world, covid_data_economic, by=c("iso_a3
 ```
 
 
-## Make Maps
+## 5. Make Maps
 
-
+### 5a. Make a rough draft of a map
 ```{r, warning=FALSE, fig.asp=0.5}
 map1<-tm_shape(worldmap_covid_data_economic)+
       tm_polygons(col="mean_economic", n=8, style="jenks", palette="BuGn")
@@ -113,7 +116,16 @@ map1<-tm_shape(worldmap_covid_data_economic)+
 map1
 ```
 
+### 5b. Adjust the "palette" argument to change the color scheme: 
 
+```{r}
+map1a<-tm_shape(worldmap_covid_data_economic)+
+      tm_polygons(col="mean_economic", n=8, style="jenks", palette="YlOrRd")
+
+map1a
+```
+
+### 5c. Customize the legend
 ```{r, warning=FALSE, fig.asp=0.5}
 map2<-tm_shape(worldmap_covid_data_economic)+
       tm_polygons(col="mean_economic", n=5, style="cont", palette="BuGn", textNA="No Data")+
@@ -122,7 +134,7 @@ map2<-tm_shape(worldmap_covid_data_economic)+
 map2
 ```
 
-
+### 5d. Add legend title; make legend breaks continuous
 ```{r, warning=FALSE, fig.asp=0.5}
 map3<-tm_shape(worldmap_covid_data_economic)+
        tm_polygons(col="mean_economic", n=5, style="cont", palette="BuGn", textNA="No Data", 
@@ -134,7 +146,7 @@ map3<-tm_shape(worldmap_covid_data_economic)+
 map3
 ```
 
-
+### 5e. Add map title
 ```{r,warning=FALSE}
 map4<-map3+
         tm_layout(main.title="National Economic Support Measures\nin Response to the Covid-19 Pandemic", 
@@ -144,6 +156,7 @@ map4
 
 ```
 
+### 5f. Add map credits
 ```{r, warning=FALSE}
 map5<-map4+
       tm_credits("Author: Aditya Ranganath\nCRS: WGS1984\nSource: ICPSR (https://doi.org/10.3886/E119061V6)", position=c(0.78,0.01), size=0.5)
@@ -151,4 +164,4 @@ map5<-map4+
 map5
 ```
 
-
+### 5g. Export your map
