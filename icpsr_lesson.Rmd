@@ -9,11 +9,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-Many of ICSPR's datasets are available in tabular formats that are ready to be imported into standard statistical software packages for analysis. In many cases, it is possible to visualize the data in these tabular datasets on a map (even if such visualizations are not explicitly a part of the original analysis or the replication materials provided by ICPSR). In this tutorial, we will provide a brief example-driven overview of how you can transform tabular information from an ICSPR dataset into a map, using packages written for the R programming language. The tutorial does not presuppose any previous experience with statistical analysis or programming. 
+Many of ICSPR's datasets are available in tabular formats that are ready to be imported into standard statistical software packages for analysis. In many cases, it is possible to visualize the data in these tabular datasets on a map (even if such visualizations are not explicitly a part of the original analysis or the replication materials provided by ICPSR). In this tutorial, we will provide a brief example-driven overview of how you can visually represent tabular information from an ICSPR dataset on a map, using packages written for the R programming language. The tutorial does not presuppose any previous experience with statistical analysis or programming. 
 
 Why map ICPSR data to begin with? Students and researchers often use data archived at ICPSR as a resource for exploration and discovery. Indeed, the data that others have collected can often inspire novel questions and hypotheses. It is also the case that the social and political processes studied by the researchers who archive their data with ICPSR are intrinsically spatial; after all, these processes necessarily occur somewhere on the surface of the earth! Placing these social and political processes in their spatial context can therefore bring the data encoded in tabular datasets to life in dramatic ways, helping us to quickly notice patterns, identify puzzles, and generate hypotheses that would have otherwise remained obscure. In addition to using ICPSR data to generate ideas and explore patterns in existing data, students and researchers may want to reuse ICPSR data and incorporate them into their own ongoing research projects; in reusing this data, they may find it helpful to make publishable maps that they can use in their own papers and projects. 
 
-By working through the following code, students and researchers will learn how to spatially visualize existing ICPSR data to aid their exploration of datasets of interest, as well as create publishable maps that can be used in their papers and projects. The  tutorial can be used as a self-study resource, as well as the basis for a classroom demonstration or activity. It is important to emphasize that this is not a tutorial on Geographic Information Systems (GIS), and we do not cover important GIS concepts such as map projections and coordinate reference systems. If you use advanced mapping and spatial analysis in your work, you should learn these technical foundations (which are beyond the scope of our lesson here). 
+By working through the following code, students and researchers will learn how to spatially visualize existing ICPSR data to aid their exploration of datasets of interest, as well as create publishable maps that can be used in their papers and projects. The  tutorial can be used as a self-study resource, as well as the basis for a classroom demonstration or activity. 
+
+It is important to emphasize that this is not a tutorial on Geographic Information Systems (GIS) writ large, and we do not cover important GIS concepts such as map projections and coordinate reference systems. If you use advanced mapping and spatial analysis in your work, you should learn these technical foundations (which are beyond the scope of our lesson here). It is also not a tutorial on the principles of cartography, which is a complex art and science that is also beyond our scope; however, it will show you how to customize maps in R, and you can use these skills (after reading up on cartography on your own) to make maps that conform to sound cartographic design principles. Our goal here is to make a functional and informative map, not a work of art. 
 
 The data we will be mapping in this tutorial comes from a dataset archived on [OPENICPSR](https://www.openicpsr.org/openicpsr/). In particular, the dataset we will be using is entitled "Governments' Responses to COVID-19", which was collected by Simon Porcher, a researcher at the University of Paris. The dataset can be found [here](https://www.openicpsr.org/openicpsr/project/119061/version/V6/view), and the full citation information is below: 
 
@@ -23,28 +25,101 @@ This panel dataset provides information on public health and economic interventi
 
 ## 1. Preliminaries 
 
-### 1b. Install Packages 
-```{r, eval=FALSE }
-install.packages(c("readxl", "tidyverse", "tmap", "sf", "rnaturalearth", "rnaturalearthdata"))
+### 1a. Install Packages 
+
+R is an open-source programming language for statistical computing that allows you to carry out a wide range of data analysis tasks. One of the big advantages of using R is that it has a very large user community among social scientists and statisticians, who frequently publish packages (which one may think of as workbooks of sorts, containing a well-integrated set of R functions, scripts, data, and documentation) to accomplish certain tasks or implement given procedures. These packages are then shared with the broader community; at this point, anyone who needs to accomplish the tasks to which the package addresses itself can use the package in the context of their own projects. The ability to use published packages considerably simplifies the work of applied social scientists using R; it means that they rarely have to write code entirely from scratch, and can build on the code that others have published. This allows applied researchers to focus on substantive problems, without having to get too bogged down in complicated programming tasks. 
+
+In the context of this tutorial, generating maps of ICPSR data in R would be relatively complex if we had to write all our code from scratch. However, because we are able to make use of mapping and visualization packages written by other researchers, the task is considerably simpler, and will not require any complicated programming. 
+
+In this tutorial, we will use a few packages to accomplish our goal of mapping tabular ICPSR data. They are:
+
++ *tmap*: The *tmap* package will allow us to create and customize a publishable map. 
++ *sf*: The *sf* package allows us to work with spatially explicit data within R.
++ *rnaturalearth*, *rnaturalearthdata*, *rgeos*: In order to visualize our data on a world map, we need a dataset of the world's country boundaries. One way to get such a dataset is to download it from a public repository, and then load it into R Studio. However, these packages allow us to load a spatial dataset of world boundaries into R Studio without having to actually download anything, which effectively saves us a few steps in the workflow. 
++ *readxl*: The *readxl* package (part of a broader suite of data science packages known as the "tidyverse") will allow us to load the tabular ICPSR dataset, which is provided as an Excel file on the ICPSR landing page, into R Studio. 
++ *dplyr*: The *dplyr* package (also a part of the tidyverse) will allow us to efficiently transform the structure of the initial ICPSR dataset into a more tractable form that is conducive to mapping. 
+
+To install a package in R, we can use the ```install.packages``` function. A function is essentially a programming construct that takes a specified input, runs this input (called an "argument") through a set of procedures, and returns an output. In the code block below, the name of the package we want to install (here, "tmap") is enclosed within quotation marks and placed within parentheses after calling the ```install.packages``` function:
+
+```{r, eval=FALSE}
+## Installs "tmap" package
+install.packages("tmap")
 ```
 
-### 1c. Load Libraries 
+After running that line of code, the "tmap" function will effectively be downloaded to your computer. Now, let's install the other packages we mentioned above, using the same procedure: 
+
+```{r, eval=FALSE}
+## Installs remainder of necessary packages to complete exercise
+install.packages("sf")
+install.packages("rnaturalearth")
+install.packages("rnaturalearthdata")
+install.packages("rgeos")
+install.packages("readxl")
+install.packages("dplyr")
+```
+
+All of the packages we need are now installed!
+
+### 1b. Load Libraries 
+
+However, while our packages are installed in our R environment, they are not yet ready to use. Before we can use our packages, we must load them into our environment. You can think of the process of loading installed packages into a current R environment as analgous to opening up an application on your phone or computer after it has been installed (even if an application is installed, you can't use it until you open it!). To load (i.e. "open") an R package, we pass the name of the package we want to load as an argument to the ```library``` function. For example, if we want to load the "tmap" package into the current environment, we can type:
+
 ```{r, results=FALSE, message=FALSE}
-library(readxl)
-library(tidyverse)
+## Loads "tmap" package
 library(tmap)
+```
+
+At this point, the full suite of the "sf" package's functionality is available for us to use. 
+
+Now, let's go ahead and load the remainder of the packages that we'll need:
+
+```{r, results=FALSE, message=FALSE}
+## Loads remainder of packages
 library(sf)
 library(rnaturalearth)
 library(rnaturalearthdata)
+library(rgeos)
+library(tidyverse)
+library(readxl)
+library(dplyr)
 ```
 
-## 2. Read in and View Data
+At this point, the packages are loaded and ready to go! One important thing to note regarding the installation and loading of packages is that you only have to install packages once; after a package is installed, there is no need to subsequently reinstall it. However, you must load the packages you need (using the ```library``` function) every time you open a new R session. In other words, if you were to close R Studio at this point and open it up later, you would **not** need to install these packages again (Step 1a), but you **would** need to load the packages again (Step 1b). 
 
-### 2a. Read in and View ICPSR Covid-19 Data
+## 2. Read in and View ICPSR Data
+
+Now that we've installed the packages we need, it's time to bring in our data into R Studio. We'll start by bringing in the tabular ICPSR data on government responses to the Covid-19 pandemic. In Step 3, we'll bring in some spatial data on national borders, and we'll use this spatial data as the basis for the map we'll make in subsequent steps. 
+
+### 2a. Set your working directory
+
+Before we can bring in our data, we have to specify the location on our computer where the data that we want to import is saved. This step is known as setting one's working directory. Before setting your working directory, make sure you've downloaded the ICPSR dataset, and have placed it in a directory (i.e. folder) on your computer that was specifically created to store this data. 
+
+If you're unfamiliar with the concept of file paths, the easiest way to set your working directory is through the R Studio menu. To do so, follow these steps: 
+
+
++ First, Click on the "Session" button on the R Studio menu at the top of your screen, and then scroll down to the "Set Working Directory" button in the dialog box that opens up. 
++ When you hover over this button, a subsidiary dialog box that contains a button that says "Choose Directory" will open; click this "Choose Directory" button. 
++ In the dialog box that opens up, navigate to the directory that contains the ICPSR data, select it, and click "Open". At this point, your working directory should be set!
+
+**Alternatively**, if you are familiar with the concept of file paths, and know the file path to the folder containing the downloaded ICPSR dataset, you can set the working directly using the ```setwd()``` function, where the argument to the function is the relevant file path enclosed in quotation marks. For example:
+
+```{r}
+## Sets working directory 
+setwd("/Users/adra7980/Documents/git_repositories/icpsr_GIS")
+```
+
+Remember that your specific file path will be different, so you should replace the file path in the above code with your own!
+
+### 2b. Read in ICPSR Covid-19 data and assign it to a new object
+
+Now that we've set our working directory, let's bring ICPSR tabular dataset into R, 
 
 ```{r}
 covid_data<-read_excel("Gov_Responses2Covid19_last.xlsx", sheet="Dataset")
 ```
+
+### 2c. Use the data viewer to view the ICPSR dataset within R Studio
+
 
 ### 2b. Read in and View World Map Data
 
